@@ -113,16 +113,8 @@ namespace l1t {
 
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > ldummy(0,0,0,0);
 
-      auto iPhi = itEtSum->hwPhi();
-      if ( EtSum::EtSumType::kMissingEt == itEtSum->getType() )
-      {
-        // GT phi is 0 - 72 for MET
-        // Region phi is 0 - 18
-        iPhi = iPhi*4;
-        //std::cout << "EMU -> GT iPhi = " << iPhi << std::endl;
-      }
       l1t::EtSum gtEtSum(*&ldummy, itEtSum->getType(), rankPt, 0,
-			 iPhi, itEtSum->hwQual());
+			 itEtSum->hwPhi(), itEtSum->hwQual());
 
       output->push_back(gtEtSum);
     }

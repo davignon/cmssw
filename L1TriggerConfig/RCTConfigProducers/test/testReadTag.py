@@ -24,16 +24,19 @@ from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
 process.newRCTConfig = cms.ESSource("PoolDBESSource",
     CondDBSetup,
     connect = cms.string('sqlite_file:l1config.db'),
+    # After DropBoxing, one can use this
+    #connect = cms.string('frontier://FrontierPrep/CMS_COND_L1T'),
     DumpStat=cms.untracked.bool(True),
     toGet = cms.VPSet(
         cms.PSet(
             record = cms.string('L1RCTParametersRcd'),
-            tag = cms.string('rctTag')
+            tag = cms.string('L1RCTParametersRcd_L1TDevelCollisionsV1_1')
         )
     )
 )
 
 process.prefer("newRCTConfig")
+#process.prefer("GlobalTag")
 
 process.l1RCTParametersTest = cms.EDAnalyzer("L1RCTParametersTester")
 

@@ -39,7 +39,7 @@ process.PoolDBOutputService = cms.Service("PoolDBOutputService",
     toPut = cms.VPSet(
         cms.PSet(
             record = cms.string('L1RCTParametersRcd'),
-            tag = cms.string('rctTag')
+            tag = cms.string('L1RCTParametersRcd_L1TDevelCollisionsV1')
         )
     )
 )

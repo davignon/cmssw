@@ -69,6 +69,27 @@ process.L1TriggerKeyOnline.subsystemLabels = cms.vstring( 'CSCTF',
 # Generate configuration data from OMDS
 process.load("CondTools.L1Trigger.L1ConfigTSCPayloads_cff")
 
+#OR:  cms.string('oracle://cms_omds_lb/CMS_TRG_R')
+#process.L1MuDTEtaPatternLutOnline.onlineDB  = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1MuDTExtLutOnline.onlineDB         = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1MuDTPhiLutOnline.onlineDB         = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1MuDTPtaLutOnline.onlineDB         = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1MuDTQualPatternLutOnline.onlineDB = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1RPCConfigOnline.onlineDB          = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1RPCConeDefinitionOnline.onlineDB  = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1RPCHsbConfigOnline.onlineDB       = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1RPCBxOrConfigOnline.onlineDB      = cms.string('frontier://FrontierProd/CMS_COND_31X_L1T')
+#process.L1MuDTEtaPatternLutOnline.onlineDB  = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1MuDTExtLutOnline.onlineDB         = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1MuDTPhiLutOnline.onlineDB         = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1MuDTPtaLutOnline.onlineDB         = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1MuDTQualPatternLutOnline.onlineDB = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1RPCConfigOnline.onlineDB          = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1RPCConeDefinitionOnline.onlineDB  = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1RPCHsbConfigOnline.onlineDB       = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+#process.L1RPCBxOrConfigOnline.onlineDB      = cms.string('oracle://cms_omds_prod/CMS_COND_31X_L1T')
+
+
 if options.copyNonO2OPayloads == 1:
     process.L1MuDTEtaPatternLutOnline.copyFromCondDB = cms.bool( True )
     process.L1MuDTEtaPatternLutOnline.onlineDB = options.copyDBConnect

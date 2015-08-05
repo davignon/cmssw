@@ -30,6 +30,9 @@
 #include "CondFormats/L1TObjects/interface/L1TriggerKeyList.h"
 #include "CondFormats/DataRecord/interface/L1TriggerKeyListRcd.h"
 
+#include <iostream>
+using namespace std;
+
 //
 // class declaration
 //
@@ -85,7 +88,7 @@ L1CondDBPayloadWriter::analyze(const edm::Event& iEvent,
        if( !m_writer.fillLastTriggerKeyList( oldKeyList ) )
 	 {
 	   edm::LogError( "L1-O2O" )
-	     << "Problem getting last L1TriggerKeyList" ;
+	     << "Problem getting last L1TriggerKeyList" <<flush;
 	 }
      }
 
@@ -112,14 +115,14 @@ L1CondDBPayloadWriter::analyze(const edm::Event& iEvent,
    catch( l1t::DataAlreadyPresentException& ex )
      {
        triggerKeyOK = false ;
-       edm::LogVerbatim( "L1-O2O" ) << ex.what() ;
+       edm::LogVerbatim( "L1-O2O" ) << ex.what() <<flush;
      }
 
    if( triggerKeyOK && m_writeL1TriggerKey )
      {
        edm::LogVerbatim( "L1-O2O" )
          << "Object key for L1TriggerKeyRcd@L1TriggerKey: "
-         << key->tscKey() ;
+         << key->tscKey() <<flush;
        token = m_writer.writePayload( iSetup,
 				      "L1TriggerKeyRcd@L1TriggerKey" ) ;
      }
@@ -153,6 +156,15 @@ L1CondDBPayloadWriter::analyze(const edm::Event& iEvent,
 
 	  for( ; it != end ; ++it )
 	    {
+	      edm::LogVerbatim( "L1-O2O" ) << "-------------------------------------------------------------------------\n"
+	          << "INFO:  recordToKeyMap:  " << it->first << ":  " << it->second << "\n" 
+	          << "-------------------------------------------------------------------------\n";
+	      // skip some problematic tables to see where we are...
+	      //if (it->first == "L1MuDTEtaPatternLutRcd@L1MuDTEtaPatternLut") { cout << "skipping!\n"; continue; }
+	      //if (it->first == "L1MuDTExtLutRcd@L1MuDTExtLut") { cout << "skipping!\n"; continue; }
+	      //if (it->second == "091022_v1") { cout << "skipping!\n"; continue; } 	      
+              //if (it->second == "LHC8_12BX") { cout << "skipping!\n"; continue; } 	      
+
 	      // Do nothing if object key is null.
 	      if( it->second == L1TriggerKey::kNullKey )
 		{

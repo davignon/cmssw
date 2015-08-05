@@ -1157,6 +1157,10 @@ void L1GtTriggerMenuConfigOnlineProd::addMuonCondition(const TableMenuCond& cond
     }
 
     L1GtMuonTemplate::CorrelationParameter corrParameter;
+    // FIXME
+    // put it back from OMDS when fixing the bool problem
+    // now, put it hardcoded to 1 - we never used another value up to now
+    //corrParameter.chargeCorrelation = static_cast<unsigned int> (condDB.chargeCorrelation);
     corrParameter.chargeCorrelation = static_cast<unsigned int> (condDB.chargeCorrelation);
     if (muonCond.wsc()) {
         corrParameter.deltaEtaRange = lexical_cast_from_hex<unsigned long long> (
@@ -1695,7 +1699,8 @@ void L1GtTriggerMenuConfigOnlineProd::addCorrelationCondition(const TableMenuCon
                 }
 
                 //  chargeCorrelation must be set for muons
-                //  put it to ignore
+                // FIXME check with the hardware if the charge for muons can be used
+                //       till then, put it to ignore
                 L1GtMuonTemplate::CorrelationParameter corrPar;
                 corrPar.chargeCorrelation = 1;
 

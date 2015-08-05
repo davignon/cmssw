@@ -416,7 +416,8 @@ class DropBox(object):
         self.hostname = hostname
         self.http = HTTP()
         self.http.setBaseUrl(urlTemplate % hostname)
-
+        os.environ['http_proxy'] = 'http://cmsproxy.cms:3128/'
+        os.environ['https_proxy'] = 'https://cmsproxy.cms:3128/'
 
     def signInSSO(self, secure = True):
         '''Signs in the server via CERN SSO.

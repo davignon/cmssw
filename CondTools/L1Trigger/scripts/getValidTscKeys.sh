@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Look for the first of the next new L1 keys which has not been validated.
-# Reference ~l1emulator/o2o/scripts/getRecentKeys.sh
+# List the Valid TSC Keys in OMDS
 
 lastID=$1
 

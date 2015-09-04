@@ -11,7 +11,7 @@
 
 ZonesOutput zonemaker(std::vector<ConvertedHit> ConvHits){
 
-	bool verbose = false;
+	//bool verbose = false;
 	PhiMemoryImage image0;
 	std::vector<PhiMemoryImage> zones (4,image0);
 	
@@ -27,7 +27,7 @@ ZonesOutput zonemaker(std::vector<ConvertedHit> ConvHits){
 				}	
 			}
 			
-			if(verbose) std::cout<<"\n\nst: "<<h->Station()<<" - wire: "<<h->Wire()<<" - strip: "<<h->Strip()<<" - zzhit = "<<h->Zhit()<<" ";
+			//if(verbose) std::cout<<"\n\nst: "<<h->Station()<<" - wire: "<<h->Wire()<<" - strip: "<<h->Strip()<<" - zzhit = "<<h->Zhit()<<" ";
 			
 		}
 		

@@ -22,37 +22,27 @@ process.options = cms.untracked.PSet(
 
 process.L1TMuonEndcapTrackFinder = cms.EDProducer(
     'L1TMuonUpgradedTrackFinder',
-    doGen = cms.untracked.bool(True),
-    genSrc = cms.untracked.InputTag("genParticles"),
+    
+	
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
     cms.InputTag('L1TMuonTriggerPrimitives','DT'),
     cms.InputTag('L1TMuonTriggerPrimitives','RPC')
     ),
-    converterSrcs = cms.VInputTag(
-    cms.InputTag('L1CSCTFTrackConverter'),
-    cms.InputTag('L1DTTFTrackConverter'),
-    cms.InputTag('L1RPCbTFTrackConverter'),
-    cms.InputTag('L1RPCfTFTrackConverter'),
-    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
-    ),
-    lutParam = cms.PSet(
-    isBeamStartConf = cms.untracked.bool(True),
-    ReadPtLUT = cms.bool(False),
-    PtMethod = cms.untracked.uint32(32)
-    )
+   
 )
 
 process.content = cms.EDAnalyzer("EventContentAnalyzer")
 
-infile = ['/store/relval/CMSSW_7_5_0_pre1/RelValSingleMuPt100_UP15/GEN-SIM-DIGI-RECO/MCRUN2_74_V7_FastSim-v1/00000/04DB6E17-72E2-E411-8311-0025905964BA.root',
+infile = [
+
+
+		'/store/relval/CMSSW_7_5_0_pre1/RelValSingleMuPt100_UP15/GEN-SIM-DIGI-RECO/MCRUN2_74_V7_FastSim-v1/00000/04DB6E17-72E2-E411-8311-0025905964BA.root',
        '/store/relval/CMSSW_7_5_0_pre1/RelValSingleMuPt100_UP15/GEN-SIM-DIGI-RECO/MCRUN2_74_V7_FastSim-v1/00000/24978F06-72E2-E411-8346-0025905A6084.root',
        '/store/relval/CMSSW_7_5_0_pre1/RelValSingleMuPt100_UP15/GEN-SIM-DIGI-RECO/MCRUN2_74_V7_FastSim-v1/00000/469C811A-72E2-E411-B1EF-0025905A6118.root',
        '/store/relval/CMSSW_7_5_0_pre1/RelValSingleMuPt100_UP15/GEN-SIM-DIGI-RECO/MCRUN2_74_V7_FastSim-v1/00000/AAD41A17-72E2-E411-A617-0025905A607E.root',
        '/store/relval/CMSSW_7_5_0_pre1/RelValSingleMuPt100_UP15/GEN-SIM-DIGI-RECO/MCRUN2_74_V7_FastSim-v1/00000/C4F4E747-71E2-E411-8305-0026189438AB.root' ]
-#'file:/afs/cern.ch/work/m/mcarver/MuonDevelopment/CMSSW_7_2_0_pre6/src/L1Trigger/L1TMuon/test/Sector1Events/1p2_2p0_Job1.root'
-#infile = 'file:MuGun_test.root'
-fileOutName = "Histos.root"
+
 
 process.source = cms.Source(
     'PoolSource',
@@ -60,10 +50,6 @@ process.source = cms.Source(
     
     )
 
-process.TFileService = cms.Service("TFileService",
-    fileName = cms.string(
-	fileOutName
-))
 
 
 outCommands = cms.untracked.vstring('keep *')

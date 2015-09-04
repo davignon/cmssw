@@ -11,18 +11,18 @@
 
 DeltaOutput Deltas(MatchingOutput Mout, int zone, int winner){
 
-	bool verbose = false;
+	//bool verbose = false;
 	
 	PhOutput phmatch = Mout.PhiMatch();
 	ThOutput thmatch = Mout.ThetaMatch();
 	
-	//for comparison only
+	/*for comparison only
 	for(int xx=0;xx<4;xx++){
 	
 		if(phmatch[zone][winner][xx].Phi() != -999 && verbose)
 			std::cout<<"phmatch["<<zone<<"]["<<winner<<"]["<<xx<<"] = "<<phmatch[zone][winner][xx].Phi()<<"\n\n";
 	}
-	
+	*/
 	
 	/////////////////////////////////////
 	///Set Null dphi and dtheta arrays///
@@ -103,16 +103,16 @@ DeltaOutput Deltas(MatchingOutput Mout, int zone, int winner){
 	
 	for(int p=0;p<6;p++){
 	
-		if(dphi[p] != -999 && verbose)
-			std::cout<<"dphi["<<p<<"] = "<<dphi[p]<<"\n\n";
+		//if(dphi[p] != -999 && verbose)
+		//	std::cout<<"dphi["<<p<<"] = "<<dphi[p]<<"\n\n";
 	
 		for(int l=0;l<4;l++){
 		
-			if(dth[p][l] != -999 && verbose){std::cout<<"dth["<<p<<"]["<<l<<"] = "<<dth[p][l]<<"\n\n";}
+			//if(dth[p][l] != -999 && verbose){std::cout<<"dth["<<p<<"]["<<l<<"] = "<<dth[p][l]<<"\n\n";}
 		
 			if(abs(dth[p][l]) < fabs(dtmp[p])){//get best dtheta(i.e. the smallest)
 			
-				if(verbose) std::cout<<"chose second hit theta  index-"<<p<<std::endl;
+				//if(verbose) std::cout<<"chose second hit theta  index-"<<p<<std::endl;
 			
 				dtmp[p] = dth[p][l];
 				
@@ -129,23 +129,23 @@ DeltaOutput Deltas(MatchingOutput Mout, int zone, int winner){
 		} 
 	}
 	
-	for(int q=0;q<3;q++){
-		if(vmask[q] && verbose)
-			std::cout<<"vmask["<<q<<"] = "<<vmask[q]<<std::endl;
-	}
+	//for(int q=0;q<3;q++){
+	//	if(vmask[q] && verbose)
+	//		std::cout<<"vmask["<<q<<"] = "<<vmask[q]<<std::endl;
+	//}
 	
 	
 	unsigned int vstat = vmask[0];
 	
-	if(vstat && verbose){std::cout<<"vstat = "<<vstat<<std::endl;}
+	//if(vstat && verbose){std::cout<<"vstat = "<<vstat<<std::endl;}
 	
 	if( !vstat || (vstat & vmask[1])){vstat |= vmask[1];}
 	
-	if(vstat && verbose){std::cout<<"vstat = "<<vstat<<std::endl;}
+	///if(vstat && verbose){std::cout<<"vstat = "<<vstat<<std::endl;}
 	
 	if( !vstat || (vstat & vmask[2])){vstat |= vmask[2];}
 	
-	if(vstat && verbose){std::cout<<"vstat = "<<vstat<<std::endl;}
+	//if(vstat && verbose){std::cout<<"vstat = "<<vstat<<std::endl;}
 	
 	const unsigned int vstatindex[11] = {0xc,0xa,0x6,0xe,0x9,0x5,0xd,0x3,0xb,0x7,0xf};
 	/////////////////////////////////////////////////////////////////////////////////////////////

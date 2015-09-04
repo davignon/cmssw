@@ -25,7 +25,7 @@ PhiMemoryImage patterns[9] = {pattern8, pattern9, pattern6, pattern7, pattern4, 
  PatternOutput DetectPatterns(ZonesOutput Eout){
  
  	///variable declarations///
-	bool verbose = false;
+	//bool verbose = false;
  	std::vector<int> tmp (128, 0);
 	std::vector<std::vector<int>> lya (4, tmp), stra (4, tmp), ranka_t (4, tmp), ranka (4, tmp);
   	std::vector<PhiMemoryImage> Merged = Eout.zone;
@@ -109,8 +109,8 @@ PhiMemoryImage patterns[9] = {pattern8, pattern9, pattern6, pattern7, pattern4, 
 	
 			int qr = ranka_t[zone][k-1], ql = ranka_t[zone][k+1], qc = ranka_t[zone][k];
 			
-			if(qc && verbose)
-				std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
+			//if(qc && verbose)
+			//	std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
 		
 			if(k==0){qr=0;}
 			if(k==127){ql=0;}
@@ -162,7 +162,7 @@ PhiMemoryImage patterns[9] = {pattern8, pattern9, pattern6, pattern7, pattern4, 
 	 for(int zz=0;zz<4;zz++){
  	   for(int z = 0;z<128;z++){
 	
-		if((out.rank)[zz][z]){std::cout<<"Zone: "<<zz<<"::new "<<(z+1)<<": "<<(out.layer)[zz][z]<<", "<<(out.straightness)[zz][z]<<", "<<(out.rank)[zz][z]<<" ";std::cout<<"\n\n";}//changing zones to Merged
+		//if((out.rank)[zz][z]){std::cout<<"Zone: "<<zz<<"::new "<<(z+1)<<": "<<(out.layer)[zz][z]<<", "<<(out.straightness)[zz][z]<<", "<<(out.rank)[zz][z]<<" ";std::cout<<"\n\n";}//changing zones to Merged
   
   	   }
 	 }

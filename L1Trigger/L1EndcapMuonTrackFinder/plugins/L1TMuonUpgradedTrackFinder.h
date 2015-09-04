@@ -63,8 +63,6 @@ public:
   void beginJob();
   void endJob();
   
-  FILE *write, *dphi, *tptest;
-
   ///////////////////////////////////////
   //// For Emulator with timing /////////
   /////  we need all of these ///////////
@@ -81,8 +79,7 @@ public:
   ///////////////////////////////////////
   ///////////////////////////////////////
   
-  edm::ParameterSet LUTparam;
-  CSCSectorReceiverLUT* srLUTs_[5][2];
+  
   const float ptscale[33] = { 
   	-1.,   0.0,   1.5,   2.0,   2.5,   3.0,   3.5,   4.0,
     4.5,   5.0,   6.0,   7.0,   8.0,  10.0,  12.0,  14.0,  
@@ -91,10 +88,8 @@ public:
   
 
 private:
-  bool _dogen;
-  edm::InputTag _geninput;
+
   std::vector<edm::InputTag> _tpinputs, _convTrkInputs;
-  edm::Service<TFileService> histofile;
   
 };
 

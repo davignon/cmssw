@@ -34,14 +34,9 @@ using namespace L1TMuon;
 
 
 L1TMuonUpgradedTrackFinder::L1TMuonUpgradedTrackFinder(const PSet& p) {
-  if( (_dogen = p.getUntrackedParameter<bool>("doGen",false)) ) {
-    _geninput = p.getUntrackedParameter<edm::InputTag>("genSrc");
-  }
+ 
+ 
   _tpinputs = p.getParameter<std::vector<edm::InputTag> >("primitiveSrcs");
-  _convTrkInputs = 
-    p.getParameter<std::vector<edm::InputTag> >("converterSrcs");
-    
-    LUTparam = p.getParameter<edm::ParameterSet>("lutParam");
     
    // produces<L1TMuon::InternalTrackCollection> ("DataITC").setBranchAlias("DataITC");
 	produces<l1t::L1TRegionalMuonCandidateCollection >("EMUTF");
@@ -51,7 +46,7 @@ L1TMuonUpgradedTrackFinder::L1TMuonUpgradedTrackFinder(const PSet& p) {
 void L1TMuonUpgradedTrackFinder::produce(edm::Event& ev, 
 			       const edm::EventSetup& es) {
 				   
-  bool verbose = false;
+  //bool verbose = false;
 			       
  		
   //std::cout<<"Start Upgraded Track Finder Producer::::: event = "<<ev.id().event()<<"\n\n";
@@ -59,33 +54,13 @@ void L1TMuonUpgradedTrackFinder::produce(edm::Event& ev,
   //fprintf (write,"12345\n"); //<-- part of printing text file to send verilog code, not needed if George's package is included
   
   
-  std::auto_ptr<L1TMuon::InternalTrackCollection> FoundTracks (new L1TMuon::InternalTrackCollection);
+  //std::auto_ptr<L1TMuon::InternalTrackCollection> FoundTracks (new L1TMuon::InternalTrackCollection);
   std::auto_ptr<l1t::L1TRegionalMuonCandidateCollection > OutputCands (new l1t::L1TRegionalMuonCandidateCollection);
   
   std::vector<BTrack> PTracks[12];
  
   std::vector<TriggerPrimitiveRef> tester;
   //std::vector<InternalTrack> FoundTracks;
-  
-  //////////////////////////////////////////////
-  ////////// Get Generated Muons ///////////////
-  //////////////////////////////////////////////
-  
-  edm::Handle<std::vector<reco::GenParticle>> GenMuons;
-  std::vector<reco::GenParticle>::const_iterator GI;
-  ev.getByLabel("genParticles",GenMuons);
-  reco::GenParticle GeneratorMuon;
-  for(GI=GenMuons->begin();GI!=GenMuons->end();GI++){
-  	
-	const reco::GenParticle GenMuon = *GI;
-	GeneratorMuon = GenMuon;
-	double pt = GenMuon.pt(), eta = GenMuon.eta(), phi = GenMuon.phi(), mass = GenMuon.mass();
-	int charge = GenMuon.charge();
-	
-	if(verbose) std::cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
-		
-  }
-  
   
   //////////////////////////////////////////////
   ///////// Get Trigger Primitives /////////////  Retrieve TriggerPrimitives from the event record
@@ -106,7 +81,7 @@ void L1TMuonUpgradedTrackFinder::produce(edm::Event& ev,
 		
 		tester.push_back(tpref);
 		
-		if(verbose) std::cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<std::endl;
+		//if(verbose) std::cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<std::endl;
       }
  
      }    
@@ -211,62 +186,6 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   	
   }
  	
- 
- ////////////////////////////////////
- //// Ghost Cancellation between ////not done correctly
- //////////   sectors     ///////////
- ////////////////////////////////////
- 
- for(int i1=0;i1<36;i1++){
- 
- 	for(int i2=i1+1;i2<36;i2++){
-		
-		int sec[2] = {i1/3,i2/3};
-		int num[2] = {i1%3,i2%3};
-		
-		bool wrap = ((sec[0] == 0 || sec[0] == 6) && (fabs(sec[0] - sec[1]) == 5));
-		bool same = (sec[0] == sec[1]);
-		bool toofar = (fabs(sec[0] - sec[1]) > 1);
-
-		if((same || toofar) && !wrap)//if same chamber or more than one chamber away dont do. !wrap allows comparison between sectors 0&5 and 6&11
-			continue;
-			
-		if(!PTracks[sec[0]][num[0]].AHits.size() || !PTracks[sec[1]][num[1]].AHits.size())
-			continue;
-		
-		int sh_seg = 0;
-		
-		if(verbose) std::cout<<"\nComparing adjacent sectors\n";
-
-		for(int sta=0;sta<4;sta++){//the part which is done incorrectly
-		
-			if((PTracks[sec[0]][num[0]].AHits[sta].Phi() == -999) || (PTracks[sec[1]][num[1]].AHits[sta].Phi() == -999))
-				continue;
-				
-		
-			if((PTracks[sec[0]][num[0]].AHits[sta].Id() == PTracks[sec[1]][num[1]].AHits[sta].Id())
-				&& (PTracks[sec[0]][num[0]].AHits[sta].Strip() == PTracks[sec[1]][num[1]].AHits[sta].Strip())
-				&& (PTracks[sec[0]][num[0]].AHits[sta].Wire() == PTracks[sec[1]][num[1]].AHits[sta].Wire())){
-				
-				sh_seg++;
-			}
-			
-		}
-		
-		if(sh_seg){//if any segments are shared delete the track with lower rank
-			
-			BTrack tmp;//default null track to replace ghost with
-			
-			if(PTracks[sec[0]][num[0]].winner.Rank() >= PTracks[sec[1]][num[1]].winner.Rank())
-				PTracks[sec[1]][num[1]] = tmp;
-			else
-				PTracks[sec[0]][num[0]] = tmp;
-		
-		}
- 	}
- }
- 
-
  ////////////////////////////////////
  /// Sorting through all sectors ////
  ///   to find 4 best muons      ////
@@ -305,55 +224,95 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   /////// tracks are found //////////
   ///////////////////////////////////
 
-  //bool epir = false;//
-  
   for(int fbest=0;fbest<4;fbest++){
   
   	if(FourBest[fbest].phi){
 	
-		//epir = true;
-	
+		
 		InternalTrack tempTrack;
   		tempTrack.setType(2); 
-	
 		tempTrack.phi = FourBest[fbest].phi;
 		tempTrack.theta = FourBest[fbest].theta;
 		tempTrack.rank = FourBest[fbest].winner.Rank();
 		tempTrack.deltas = FourBest[fbest].deltas;
 		std::vector<int> ps, ts;
+		
+		
 		int sector = -1;
+		bool ME13 = false;
+		int me1address = 0, me2address = 0, CombAddress = 0, mode = 0;
 		
 		for(std::vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
 		
 			if(A->Phi() != -999){
 			
+				int station = A->TP()->detId<CSCDetId>().station();
+				int id = A->TP()->getCSCData().cscID;
+				int trknm = A->TP()->getCSCData().trknmb;
+			
 				tempTrack.addStub(A->TP());
 				ps.push_back(A->Phi());
 				ts.push_back(A->Theta());
-				sector = (A->TP()->detId<CSCDetId>().endcap() -1)*6 + A->TP()->detId<CSCDetId>().triggerSector() - 1;
+				//sector = (A->TP()->detId<CSCDetId>().endcap() -1)*6 + A->TP()->detId<CSCDetId>().triggerSector() - 1;
 				//std::cout<<"Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<std::endl;
+				
+				switch(station){
+					case 1: mode |= 8;break;
+					case 2: mode |= 4;break;
+					case 3: mode |= 2;break;
+					case 4: mode |= 1;break;
+					default: mode |= 0;
+				}
+				
+				
+				if(A->TP()->detId<CSCDetId>().station() == 1 && A->TP()->detId<CSCDetId>().ring() == 3)
+					ME13 = true;
+			
+				if(station == 1 && id > 3 && id < 7){
+				
+					int sub = 2;
+					if(A->TP()->detId<CSCDetId>().chamber()%6 > 2)
+						sub = 1;
+				
+					me1address = id;
+					me1address -= 3;
+					me1address += 3*(sub - 1);
+					me1address = id<<1;//
+					me1address |= trknm-1;
+			
+				}
+				
+				if(station == 2 && id > 3){
+				
+					me2address = id;
+					me2address -= 3;
+					me2address = me2address<<1;
+					me2address |= trknm-1;
+				
+				}
+			
+			
 			}
 			
 		}
 		tempTrack.phis = ps;
 		tempTrack.thetas = ts;
 		
-		if(verbose) std::cout<<"\n\nTrack "<<fbest<<": ";
-		float xmlpt = CalculatePt(tempTrack);
-		tempTrack.pt = xmlpt;
-		if(verbose) std::cout<<"XML pT = "<<tempTrack.pt<<"\n";
-		FoundTracks->push_back(tempTrack);
-		if(verbose) std::cout<<"\n\n";
+		float xmlpt = CalculatePt(tempTrack,es);
+		tempTrack.pt = xmlpt*1.4;
+		//FoundTracks->push_back(tempTrack);
 		
+		CombAddress = (me2address<<4) | me1address;
 		
-		l1t::L1TRegionalMuonCandidate outCand = MakeRegionalCand(xmlpt,FourBest[fbest].phi,FourBest[fbest].theta,
-														         1,FourBest[fbest].winner.Rank(),1,sector);
+		l1t::L1TRegionalMuonCandidate outCand = MakeRegionalCand(xmlpt*1.4,FourBest[fbest].phi,FourBest[fbest].theta,
+														         CombAddress,mode,1,sector);
 																 
-		OutputCands->push_back(outCand);
+		if(!ME13)
+			OutputCands->push_back(outCand);
 	}
   }
   
- //  std::cout<<"Begin Put function\n\n";
+  
 //ev.put( FoundTracks, "DataITC");
 ev.put( OutputCands, "EMUTF");
   //std::cout<<"End Upgraded Track Finder Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
@@ -362,38 +321,11 @@ ev.put( OutputCands, "EMUTF");
 
 void L1TMuonUpgradedTrackFinder::beginJob()
 {
-
-	//std::cout<<"Begin TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
-	///////////////////////////
-	////// Histogram //////////
-	////// Declaration ////////
-	///////////////////////////
-	
-	TFileDirectory dir = histofile->mkdir("1");//
-
-	
-	///////////////////////////
-	/////// Output ////////////
-	///// Text Files //////////
-	///////////////////////////
-	
-	
-	write = fopen ("zone0.txt","w");
-
-	
-	
 	
 }
 void L1TMuonUpgradedTrackFinder::endJob()
 {
 
-	fclose (write);
-	
-	
-	
-		
-	std::cout<<"\nTHE END"<<std::endl;
-	
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(L1TMuonUpgradedTrackFinder);

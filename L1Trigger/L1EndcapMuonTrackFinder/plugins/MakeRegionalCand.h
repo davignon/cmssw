@@ -62,9 +62,9 @@ l1t::L1TRegionalMuonCandidate MakeRegionalCand(float pt, int phi, int theta,
 	int iEta = GetPackedEta(theta,sector);
 	int iPhi = GetPackedPhi(phi);
 	
-	l1t::tftype TFtype = l1t::tftype::emtf_neg;
+	l1t::tftype TFtype = l1t::tftype::emtf_pos;
 	if(sector > 5){
-		TFtype = l1t::tftype::emtf_pos;
+		TFtype = l1t::tftype::emtf_neg;
 		sector -= 6;
 	}
 		
@@ -75,7 +75,7 @@ l1t::L1TRegionalMuonCandidate MakeRegionalCand(float pt, int phi, int theta,
 	if(iPt < 0)
 		iPt = 0;
 		
-	int iQual = quality/8;
+	int iQual = quality;
 		
 	Cand.setHwPt(iPt);
 	Cand.setHwEta(iEta);
@@ -83,7 +83,7 @@ l1t::L1TRegionalMuonCandidate MakeRegionalCand(float pt, int phi, int theta,
   	Cand.setHwSign(1);
 	Cand.setHwSignValid(0);
   	Cand.setHwQual(iQual);
-  	Cand.setHwTrackAddress(1);
+  	Cand.setHwTrackAddress(trackaddress);
 	Cand.setTFIdentifiers(sector,TFtype);
   	
 

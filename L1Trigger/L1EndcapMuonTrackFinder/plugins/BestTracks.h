@@ -12,7 +12,7 @@ Date: 7/29/13
 
 std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 
-	bool verbose = false;
+	//bool verbose = false;
 
 	int larger[12][12] = {{0},{0}}, kill[12] = {0};
 	int exists[12] = {0};
@@ -42,11 +42,12 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			
 				
 				int cham = Dout[zone][winner].GetMatchOut().PhiMatch()[zone][winner][station].Id();
-				int relst = 0, relch = 0;
+				//int relst = 0;
+				int relch = 0;
 				
 				if(station == 0){
 				
-					relst = (cham < 3) ? 0 : 1;
+					//relst = (cham < 3) ? 0 : 1;
 					relch = cham%3;
 					if(zone == 2)
 						relch += 3;
@@ -55,14 +56,14 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 				}
 				else if(station == 1){
 				
-					relst = station + 1;
+					//relst = station + 1;
 					relch = cham;
 					if(zone > 1)
 						relch += 3;
 				}
 				else{
 				
-					relst = station + 1;
+					//relst = station + 1;
 					relch = cham;
 					if(zone > 0)
 						relch += 3;
@@ -71,8 +72,8 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 				//phi[zone][winner][relst] = phi[zone][winner][station];
 				//id[zone][winner][relst] = id[zone][winner][station];
 				
-				if(phi[zone][winner][relst] != -999 && verbose)
-					std::cout<<"st:"<<relst<<"::real phi = "<<phi[zone][winner][relst]<<" and id = "<<id[zone][winner][relst]<<std::endl;
+				//if(phi[zone][winner][relst] != -999 && verbose)
+				//	std::cout<<"st:"<<relst<<"::real phi = "<<phi[zone][winner][relst]<<" and id = "<<id[zone][winner][relst]<<std::endl;
 				
 			}
 		}
@@ -112,8 +113,8 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			
 			for(int s=0;s<4;s++){
 				
-				if(id[k%4][k/4][s] && (k != l) && ((phi[k%4][k/4][s] != -999) && (phi[l%4][l/4][s] != -999)) && verbose)
-					std::cout<<"id1 = "<<id[k%4][k/4][s]<<", id2 = "<<id[l%4][l/4][s]<<"\nphi1 = "<<phi[k%4][k/4][s]<<", phi1 = "<<phi[l%4][l/4][s]<<".\n";
+				//if(id[k%4][k/4][s] && (k != l) && ((phi[k%4][k/4][s] != -999) && (phi[l%4][l/4][s] != -999)) && verbose)
+				//	std::cout<<"id1 = "<<id[k%4][k/4][s]<<", id2 = "<<id[l%4][l/4][s]<<"\nphi1 = "<<phi[k%4][k/4][s]<<", phi1 = "<<phi[l%4][l/4][s]<<".\n";
 				
 				if((id[k%4][k/4][s] == id[l%4][l/4][s])
 					&& ((phi[k%4][k/4][s] != -999) || (phi[l%4][l/4][s] != -999))
@@ -130,7 +131,7 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			if(sh_seg){
 		
 				//kill candidate that has lower rank
-				if(verbose) std::cout<<"\nsh_seg != 0\nk = "<<k<<" and l = "<<l<<"\n";
+				//if(verbose) std::cout<<"\nsh_seg != 0\nk = "<<k<<" and l = "<<l<<"\n";
 				if(larger[k][l]){kill[l] = 1;}
 				else{kill[k] = 1;}
 			}
@@ -180,10 +181,10 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			
 				BTrack bests;
 				
-				if(verbose) std::cout<<"Best Rank "<<n<<" = "<<Dout[i%4][i/4].GetWinner().Rank()<<"\n\n";
-				if(verbose) std::cout<<"Phi = "<<Dout[i%4][i/4].Phi()<<" and Theta = "<<Dout[i%4][i/4].Theta()<<"\n\n";
-				if(verbose) std::cout<<"Ph Deltas: "<<Dout[i%4][i/4].Deltas()[0][0]<<" "<<Dout[i%4][i/4].Deltas()[0][1]<<"   Th Deltas: "<<Dout[i%4][i/4].Deltas()[1][0]
-																	     <<" "<<Dout[i%4][i/4].Deltas()[1][1]<<"\n\n";
+				//if(verbose) std::cout<<"Best Rank "<<n<<" = "<<Dout[i%4][i/4].GetWinner().Rank()<<"\n\n";
+				//if(verbose) std::cout<<"Phi = "<<Dout[i%4][i/4].Phi()<<" and Theta = "<<Dout[i%4][i/4].Theta()<<"\n\n";
+				//if(verbose) std::cout<<"Ph Deltas: "<<Dout[i%4][i/4].Deltas()[0][0]<<" "<<Dout[i%4][i/4].Deltas()[0][1]<<"   Th Deltas: "<<Dout[i%4][i/4].Deltas()[1][0]
+				//													     <<" "<<Dout[i%4][i/4].Deltas()[1][1]<<"\n\n";
 						
 				bests.winner = Dout[i%4][i/4].GetWinner();
 				bests.phi = Dout[i%4][i/4].Phi();

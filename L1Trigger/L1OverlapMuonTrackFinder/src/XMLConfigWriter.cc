@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <ctime>
 
 #include "xercesc/framework/StdOutFormatTarget.hpp"
 #include "xercesc/framework/LocalFileFormatTarget.hpp"
@@ -61,7 +62,12 @@ XMLConfigWriter::XMLConfigWriter(){
 void XMLConfigWriter::initialiseXMLDocument(const std::string & docName){
 
   theDoc = domImpl->createDocument(0,_toDOMS(docName.c_str()), 0);
-  theTopElement = theDoc->getDocumentElement();    
+  theTopElement = theDoc->getDocumentElement();
+
+  std::ostringstream stringStr;
+  stringStr.str("");
+  stringStr<<time(NULL);
+  theTopElement->setAttribute(_toDOMS("version"), _toDOMS(stringStr.str()));
 
 }
 //////////////////////////////////////////////////

@@ -227,7 +227,7 @@ uint32_t OMTFConfiguration::getLayerNumber(uint32_t rawId){
     CSCDetId csc(rawId);
     aLayer = csc.station();
     if(csc.ring()==2 && csc.station()==1) aLayer = 4;  /////AK TEST
-    //if(csc.station()==4) aLayer = 5;  /////UGLY, has to match the TEST above
+    if(csc.station()==4) aLayer = 5;  /////UGLY, has to match the TEST above
     break;
   }
   }  

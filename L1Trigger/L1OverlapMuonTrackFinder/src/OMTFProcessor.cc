@@ -5,6 +5,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "L1Trigger/L1OverlapMuonTrackFinder/interface/OMTFProcessor.h"
 #include "L1Trigger/L1OverlapMuonTrackFinder/interface/OMTFConfiguration.h"
@@ -25,18 +26,18 @@ OMTFProcessor::OMTFProcessor(const edm::ParameterSet & theConfig){
   myResults.assign(OMTFConfiguration::nTestRefHits,OMTFProcessor::resultsMap());
 
   if ( !theConfig.exists("patternsXMLFiles") ) return;
-  //std::vector<std::string> fileNames = theConfig.getParameter<std::vector<std::string> >("patternsXMLFiles");
-  std::vector<std::string> fileNames{theConfig.getParameter<edm::FileInPath>("patternsXMLFiles").fullPath()};
+
+
+  std::vector<std::string> fileNames;
+  for(auto it: theConfig.getParameter<std::vector<edm::ParameterSet> >("patternsXMLFiles")){
+    fileNames.push_back(it.getParameter<edm::FileInPath>("patternsXMLFile").fullPath());
+  }  
 
   XMLConfigReader myReader;
   for(auto it: fileNames){
    myReader.setPatternsFile(it);
    configure(&myReader);
   }
-
-  averagePatterns(1);
-  averagePatterns(-1);
-
 }
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -85,7 +86,12 @@ bool OMTFProcessor::configure(XMLConfigReader *aReader){
 ///////////////////////////////////////////////
 bool OMTFProcessor::addGP(GoldenPattern *aGP){
 
-  if(theGPs.find(aGP->key())!=theGPs.end()) return false;
+  if(theGPs.find(aGP->key())!=theGPs.end()){
+    throw cms::Exception("Corrupted Golden Patterns data")
+      <<"OMTFProcessor::addGP(...) "
+      <<" Reading two Golden Patterns with the same key: "
+      <<aGP->key()<<std::endl;
+  }
   else theGPs[aGP->key()] = new GoldenPattern(*aGP);
 
   for(auto & itRegion: myResults) itRegion[aGP->key()] = OMTFResult(); 
@@ -121,27 +127,33 @@ void  OMTFProcessor::averagePatterns(int charge){
     }
     ++aKey.thePtCode;
     
-    /*
-    std::cout<<"Klucz: "
-	     <<aGP1->key()
-	     <<" "<<aGP2->key()
-	     <<" "<<aGP3->key()
-	     <<" "<<aGP4->key()<<std::endl;
-    */
-
+    
     GoldenPattern::vector2D meanDistPhi  = aGP1->getMeanDistPhi();
 
     GoldenPattern::vector2D meanDistPhi1  = aGP1->getMeanDistPhi();
     GoldenPattern::vector2D meanDistPhi2  = aGP2->getMeanDistPhi();
     GoldenPattern::vector2D meanDistPhi3  = aGP3->getMeanDistPhi();
     GoldenPattern::vector2D meanDistPhi4  = aGP4->getMeanDistPhi();
-    
+    /*
+     std::cout<<"Key: "
+	     <<aGP1->key()
+	     <<" "<<aGP2->key()
+	     <<" "<<aGP3->key()
+	     <<" "<<aGP4->key()<<std::endl;
+    */
     for(unsigned int iLayer=0;iLayer<OMTFConfiguration::nLayers;++iLayer){
       for(unsigned int iRefLayer=0;iRefLayer<OMTFConfiguration::nRefLayers;++iRefLayer){
 	meanDistPhi[iLayer][iRefLayer]+=meanDistPhi2[iLayer][iRefLayer];
 	meanDistPhi[iLayer][iRefLayer]+=meanDistPhi3[iLayer][iRefLayer];
 	meanDistPhi[iLayer][iRefLayer]+=meanDistPhi4[iLayer][iRefLayer];
 	meanDistPhi[iLayer][iRefLayer]/=4;
+	/*
+	std::cout<<"Mean distPhi: "<<meanDistPhi[iLayer][iRefLayer]
+		 <<" "<<meanDistPhi1[iLayer][iRefLayer]
+		 <<" "<<meanDistPhi2[iLayer][iRefLayer]
+		 <<" "<<meanDistPhi3[iLayer][iRefLayer]
+		 <<" "<<meanDistPhi4[iLayer][iRefLayer]<<std::endl;	
+	*/
       }
     }
     
@@ -157,7 +169,8 @@ void  OMTFProcessor::averagePatterns(int charge){
       shiftGP(aGP3,meanDistPhi, meanDistPhi3);   
       shiftGP(aGP4,meanDistPhi, meanDistPhi4);   
     }
-  }  
+  }
+  
 }
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////

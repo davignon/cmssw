@@ -69,8 +69,23 @@ std::vector<GoldenPattern*> XMLConfigReader::readPatterns(){
   DOMElement* aGPElement = 0;
   for(unsigned int iItem=0;iItem<nElem;++iItem){
     aNode = doc->getElementsByTagName(_toDOMS("GP"))->item(iItem);
-    aGPElement = static_cast<DOMElement *>(aNode); 
-    aGPs.push_back(buildGP(aGPElement));    
+    aGPElement = static_cast<DOMElement *>(aNode);
+
+    std::ostringstream stringStr;
+    GoldenPattern *aGP;
+    for(unsigned int index = 1;index<5;++index){
+      stringStr.str("");
+      stringStr<<"iPt"<<index;
+      ///Patterns XMl format backward compatibility. Can use both packed by 4, or by 1 XML files.      
+      if(aGPElement->getAttributeNode(_toDOMS(stringStr.str().c_str()))){
+	aGP = buildGP(aGPElement,index);
+	if(aGP) aGPs.push_back(aGP);
+      }
+      else{
+	aGPs.push_back(buildGP(aGPElement));
+	break;
+      }
+    }
   }
   delete doc;
 
@@ -78,9 +93,16 @@ std::vector<GoldenPattern*> XMLConfigReader::readPatterns(){
 }
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
-GoldenPattern * XMLConfigReader::buildGP(DOMElement* aGPElement){
+GoldenPattern * XMLConfigReader::buildGP(DOMElement* aGPElement,
+					 unsigned int index){
 
-  unsigned int iPt = std::atoi(_toString(aGPElement->getAttribute(_toDOMS("iPt"))).c_str());
+  std::ostringstream stringStr; 
+  if(index>0) stringStr<<"iPt"<<index;
+  else stringStr.str("iPt");
+  
+  unsigned int iPt = std::atoi(_toString(aGPElement->getAttribute(_toDOMS(stringStr.str().c_str()))).c_str());
+  if(iPt==0) return 0;
+  
   int iEta = std::atoi(_toString(aGPElement->getAttribute(_toDOMS("iEta"))).c_str());
   int iCharge = std::atoi(_toString(aGPElement->getAttribute(_toDOMS("iCharge"))).c_str());
   int val = 0;
@@ -108,15 +130,19 @@ GoldenPattern * XMLConfigReader::buildGP(DOMElement* aGPElement){
       meanDistPhi1D[iItem] = val;
     }
     meanDistPhi2D[iLayer] = meanDistPhi1D;
+
     ///PDF vector
+    stringStr.str("");
+    if(index>0) stringStr<<"value"<<index;
+    else stringStr.str("value");    
     nItems = aLayerElement->getElementsByTagName(_toDOMS("PDF"))->getLength();
     assert(nItems==OMTFConfiguration::nRefLayers*exp2(OMTFConfiguration::nPdfAddrBits));
     for(unsigned int iRefLayer=0;iRefLayer<OMTFConfiguration::nRefLayers;++iRefLayer){
       pdf1D.assign(exp2(OMTFConfiguration::nPdfAddrBits),0);
       for(unsigned int iPdf=0;iPdf<exp2(OMTFConfiguration::nPdfAddrBits);++iPdf){
 	aNode = aLayerElement->getElementsByTagName(_toDOMS("PDF"))->item(iRefLayer*exp2(OMTFConfiguration::nPdfAddrBits)+iPdf);
-	aItemElement = static_cast<DOMElement *>(aNode); 
-	val = std::atoi(_toString(aItemElement->getAttribute(_toDOMS("value"))).c_str());
+	aItemElement = static_cast<DOMElement *>(aNode);
+	val = std::atoi(_toString(aItemElement->getAttribute(_toDOMS(stringStr.str().c_str()))).c_str());
 	pdf1D[iPdf] = val;
       }
       pdf2D[iRefLayer] = pdf1D;

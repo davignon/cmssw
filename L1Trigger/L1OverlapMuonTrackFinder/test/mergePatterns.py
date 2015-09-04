@@ -6,7 +6,7 @@ import commands
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
-verbose = True
+verbose = False
 
 if verbose:
     process.MessageLogger = cms.Service("MessageLogger",
@@ -65,17 +65,7 @@ process.source = cms.Source(
     'PoolSource',
     fileNames = cms.untracked.vstring('file:/home/akalinow/scratch/CMS/OverlapTrackFinder/Crab/SingleMuFullEtaTestSample/720_FullEta_v1/data/SingleMu_16_p_1_2_TWz.root')
     )
-'''
-##Use all available events in a single job.
-##Only for making the connections maps.
-process.source.fileNames =  cms.untracked.vstring()
-path = "/home/akalinow/scratch/CMS/OverlapTrackFinder/Crab/SingleMuFullEta/721_FullEta_v3/data/"
-command = "ls "+path+"/SingleMu_{10,11,16}*"
-fileList = commands.getoutput(command).split("\n")
-process.source.fileNames =  cms.untracked.vstring()
-for aFile in fileList:
-    process.source.fileNames.append('file:'+aFile)
-'''
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100))
 
 ###PostLS1 geometry used
@@ -86,38 +76,22 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
-path = os.environ['CMSSW_BASE']+"/src/L1Trigger/L1OverlapMuonTrackFinder/data/"
-path1 = "/home/akalinow/scratch/CMS/OverlapTrackFinder/Emulator/job_3_pat/"
-
-#path = "/home/akalinow/OMTF/"
-
-patternsXMLFiles = cms.vstring()
-
+path = "job_3_pat/7_5_0/"
+patternsXMLFiles = cms.VPSet()
 for ipt in xrange(4,32):
+    patternsXMLFiles.append(cms.PSet(patternsXMLFile = cms.FileInPath(path+"SingleMu_"+str(ipt)+"_p/GPs.xml")))
+    patternsXMLFiles.append(cms.PSet(patternsXMLFile = cms.FileInPath(path+"SingleMu_"+str(ipt)+"_m/GPs.xml")))
             
-    patternsXMLFiles.append(path1+"SingleMu_"+str(ipt)+"_p/GPs.xml")
-    patternsXMLFiles.append(path1+"SingleMu_"+str(ipt)+"_m/GPs.xml")
-
 process.load('L1Trigger.L1EndcapMuonTrackFinder.L1TMuonTriggerPrimitiveProducer_cfi')
 
+patternsXMLFiles = cms.VPSet()
+patternsXMLFiles.append(cms.PSet(patternsXMLFile = cms.FileInPath("L1Trigger/L1OverlapMuonTrackFinder/data/Patterns_ipt4_31_750_4x.xml")))
+
+
 ###OMTF emulator configuration
-process.omtfEmulator = cms.EDProducer("OMTFProducer",
-                                      TriggerPrimitiveSrc = cms.InputTag('L1TMuonTriggerPrimitives'),
-                                      dumpResultToXML = cms.bool(False),
-                                      XMLDumpFileName = cms.string("TestEvents.xml"),     
-                                      dumpGPToXML = cms.bool(True),
-                                      readEventsFromXML = cms.bool(False),
-                                      eventsXMLFiles = cms.vstring("TestEvents.xml"),
-                                      makeConnectionsMaps = cms.bool(False),                                      
-                                      dropRPCPrimitives = cms.bool(False),                                    
-                                      dropDTPrimitives = cms.bool(False),                                    
-                                      dropCSCPrimitives = cms.bool(False),   
-                                      omtf = cms.PSet(
-        configXMLFile = cms.string(path+"hwToLogicLayer_750.xml"),
-        #patternsXMLFiles = cms.vstring(path+"Patterns_ipt4_31_750.xml"),
-        patternsXMLFiles = patternsXMLFiles        
-        )
-                                      )
+process.load('L1Trigger.L1OverlapMuonTrackFinder.OMTFProducer_cfi')
+process.omtfEmulator.omtf.patternsXMLFiles = patternsXMLFiles
+process.omtfEmulator.dumpGPToXML = cms.bool(True)  
 
 ###Gen level filter configuration
 process.MuonEtaFilter = cms.EDFilter("SimTrackEtaFilter",

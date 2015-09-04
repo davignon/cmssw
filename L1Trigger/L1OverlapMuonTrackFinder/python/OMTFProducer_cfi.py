@@ -4,6 +4,7 @@ import FWCore.ParameterSet.Config as cms
 omtfEmulator = cms.EDProducer("OMTFProducer",
                               TriggerPrimitiveSrc = cms.InputTag('L1TMuonTriggerPrimitives'),
                               dumpResultToXML = cms.bool(False),
+                              dumpDetailedResultToXML = cms.bool(False),
                               XMLDumpFileName = cms.string("TestEvents.xml"),                                     
                               dumpGPToXML = cms.bool(False),  
                               readEventsFromXML = cms.bool(False),
@@ -12,8 +13,10 @@ omtfEmulator = cms.EDProducer("OMTFProducer",
                               dropDTPrimitives = cms.bool(False),                                    
                               dropCSCPrimitives = cms.bool(False),   
                               omtf = cms.PSet(
+                                  patternsXMLFiles = cms.VPSet(
+                                       cms.PSet(patternsXMLFile = cms.FileInPath("L1Trigger/L1OverlapMuonTrackFinder/data/Patterns_ipt4_31_750_4x.xml")),
+                                      ),
                                   configXMLFile = cms.FileInPath("L1Trigger/L1OverlapMuonTrackFinder/data/hwToLogicLayer_750.xml"),
-                                  patternsXMLFiles = cms.FileInPath("L1Trigger/L1OverlapMuonTrackFinder/data/Patterns_ipt4_31_750.xml"),
                               )
 )
 

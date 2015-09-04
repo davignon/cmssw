@@ -45,7 +45,8 @@ class XMLConfigReader{
   std::string patternsFile; //XML file with GoldenPatterns
   std::string eventsFile;   //XML file with events
 
-  GoldenPattern * buildGP(xercesc::DOMElement* aGPElement); 
+  GoldenPattern * buildGP(xercesc::DOMElement* aGPElement,
+			  unsigned int index=0); 
   
   xercesc::XercesDOMParser *parser;
   xercesc::DOMDocument* doc;

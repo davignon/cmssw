@@ -75,7 +75,7 @@ process.source.fileNames =  cms.untracked.vstring()
 for aFile in fileList:
     process.source.fileNames.append('file:'+aFile)
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000))
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000))
 
 ###PostLS1 geometry used
 process.load('Configuration.Geometry.GeometryExtendedPostLS1Reco_cff')
@@ -85,15 +85,29 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
-
 process.load('L1Trigger.L1EndcapMuonTrackFinder.L1TMuonTriggerPrimitiveProducer_cfi')
 
-###OMTF emulator configuration
-process.load('L1Trigger.L1OverlapMuonTrackFinder.OMTFProducer_cfi')
-process.omtfEmulator.makeConnectionsMaps  =  cms.bool(True)
+###OMTF pattern maker configuration
+process.omtfPatternMaker = cms.EDAnalyzer("OMTFPatternMaker",
+                                      TriggerPrimitiveSrc = cms.InputTag('L1TMuonTriggerPrimitives'),
+                                      g4SimTrackSrc = cms.InputTag('g4SimHits'),
+                                      makeGoldenPatterns = cms.bool(True),                                     
+                                      makeConnectionsMaps = cms.bool(False),                                      
+                                      dropRPCPrimitives = cms.bool(False),                                    
+                                      dropDTPrimitives = cms.bool(False),                                    
+                                      dropCSCPrimitives = cms.bool(False),   
+                                      ptCode = cms.int32(16),
+                                      charge = cms.int32(1),
+                                      omtf = cms.PSet(
+                                      patternsXMLFiles = cms.VPSet(
+                                       cms.PSet(patternsXMLFile = cms.FileInPath("L1Trigger/L1OverlapMuonTrackFinder/data/Patterns_ipt4_31_750.xml")),
+                                      ),
+                                      configXMLFile = cms.FileInPath("L1Trigger/L1OverlapMuonTrackFinder/data/hwToLogicLayer_750.xml"),
+                              )
+)
 
 process.L1TMuonSeq = cms.Sequence( process.L1TMuonTriggerPrimitives+ 
-                                   process.omtfEmulator)
+                                   process.omtfPatternMaker)
 
 process.L1TMuonPath = cms.Path(process.L1TMuonSeq)
 

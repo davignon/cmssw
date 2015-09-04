@@ -51,17 +51,17 @@ class OMTFProcessor{
   void fillCounts(unsigned int iProcessor,
 		  const OMTFinput & aInput,
 		  const SimTrack* aSimMuon);
+
+  ///Average patterns. Use same meanDistPhi for two
+  ///patterns neighboring in pt code.
+  ///Averaging is made saparately fo each charge
+  void averagePatterns(int charge);
   
  private:
 
   ///Add GoldenPattern to pattern map.
   ///If GP key already exists in map, a new entry is ignored
   bool addGP(GoldenPattern *aGP);
-
-  ///Average patterns. Use same meanDistPhi for two
-  ///patterns neighboring in pt code.
-  ///Averaging is made saparately fo each charge
-  void averagePatterns(int charge);
 
   ///Shift pdf indexes by differecne between averaged and
   ///original meanDistPhi

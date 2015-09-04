@@ -34,6 +34,7 @@ OMTFProducer::OMTFProducer(const edm::ParameterSet& cfg):
   myWriter = 0;
   
   dumpResultToXML = theConfig.getParameter<bool>("dumpResultToXML");
+  dumpDetailedResultToXML = theConfig.getParameter<bool>("dumpDetailedResultToXML");
   dumpGPToXML = theConfig.getParameter<bool>("dumpGPToXML");
   theConfig.getParameter<std::string>("XMLDumpFileName");
   
@@ -77,53 +78,30 @@ void OMTFProducer::endJob(){
   }
 
   if(dumpGPToXML && !dumpResultToXML){
+
+    GoldenPattern *dummy = new GoldenPattern(Key(0,0,0));
+    dummy->reset();
+    
     std::string fName = "OMTF";
     myWriter->initialiseXMLDocument(fName);
     const std::map<Key,GoldenPattern*> & myGPmap = myOMTF->getPatterns();
     for(auto itGP: myGPmap){
       //std::cout<<*itGP.second<<std::endl;     
-      myWriter->writeGPData(*itGP.second);
+      //myWriter->writeGPData(*itGP.second);
+      if(itGP.second->key().thePtCode>5) myWriter->writeGPData(*itGP.second,*dummy, *dummy, *dummy);
     }
     fName = "GPs.xml";
     myWriter->finaliseXMLDocument(fName);
-    ///Write merged GPs.//////////////////////////////////
-    ///2x merging
-    int charge = -1;
-    int iPtMin = 4;
-    Key aKey(1, iPtMin, charge);
-
-    fName = "OMTF";
-    myWriter->initialiseXMLDocument(fName);
-    while(myGPmap.find(aKey)!=myGPmap.end()){
-      GoldenPattern *aGP1 = myGPmap.find(aKey)->second;
-      GoldenPattern *aGP2 = aGP1;
-
-      ++aKey.thePtCode;
-      if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP2 =  myGPmap.find(aKey)->second;      
-
-      myWriter->writeGPData(*aGP1,*aGP2);
-
-      aKey.theCharge = 1;
-      if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP2 = myGPmap.find(aKey)->second;
-      --aKey.thePtCode;
-      if(myGPmap.find(aKey)!=myGPmap.end()) aGP1 = myGPmap.find(aKey)->second;
-      myWriter->writeGPData(*aGP1,*aGP2);
-
-      ++aKey.thePtCode;
-      ++aKey.thePtCode;
-      aKey.theCharge = -1;
-    }   
-    fName = "GPs_2x.xml";
-    myWriter->finaliseXMLDocument(fName);  
-    //////////////////////////////////////////////
+    ///Write GPs merged by 4 above iPt19, and by 2 below//
+    //////////////////////////////////////////////////////
     ///4x merging
     fName = "OMTF";
     myWriter->initialiseXMLDocument(fName);
+    myOMTF->averagePatterns(1);
+    myOMTF->averagePatterns(-1);
 
-    GoldenPattern *dummy = new GoldenPattern(Key(0,0,0));
-    dummy->reset();
-
-    aKey = Key(1, iPtMin, charge);    
+    unsigned int iPtMin = 6;
+    Key aKey = Key(1, iPtMin,-1);    
     while(myGPmap.find(aKey)!=myGPmap.end()){
 
     GoldenPattern *aGP1 = myGPmap.find(aKey)->second;
@@ -234,11 +212,11 @@ void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
 	InternalObj myCand = mySorter->sortRefHitResults(myResultsPos[iRefHit],0);//charge=0 means ignore charge
 	if(myCand.pt){
 	  myWriter->writeCandidateData(aProcElement,iRefHit,myCand);
-	  /*
-	  for(auto & itKey: myResults[iRefHit]) myWriter->writeResultsData(aProcElement, 
-									   iRefHit,
-									   itKey.first,itKey.second);    
-	  */
+	  if(dumpDetailedResultToXML){
+	    for(auto & itKey: myResultsNeg[iRefHit]) myWriter->writeResultsData(aProcElement, 
+										iRefHit,
+										itKey.first,itKey.second);    
+	  }
 	}
       }
     }    
@@ -272,7 +250,7 @@ void OMTFProducer::processCandidates(unsigned int iProcessor,
       phiValue/=10; //uGMT has 10x coarser scale than OMTF
 
       ////TEST
-      //phiValue =(myOTFCandidates[iCand].hwPhi()+ lowScaleEnd);
+      phiValue =(myOTFCandidates[iCand].hwPhi()+ lowScaleEnd);
       //phiValue = iProcessor;
       ////
       

@@ -54,6 +54,7 @@ bool  OMTFinputMaker::acceptDigi(uint32_t rawId,
   switch (detId.subdetId()) {
   case MuonSubdetId::RPC: {
     RPCDetId aId(rawId);
+    
     ///Select RPC chambers connected to OMTF
     if(type==l1t::tftype::omtf_pos &&
        (aId.region()<0 ||
@@ -61,7 +62,9 @@ bool  OMTFinputMaker::acceptDigi(uint32_t rawId,
        (aId.region()==0 && aId.station()==4) ||
        (aId.region()==0 && aId.station()==2 && aId.layer()==2 && aId.roll()==1) ||
        (aId.region()==0 && aId.station()==3 && aId.roll()==1) ||
-       (aId.region()==1 && aId.ring()<3))
+       (aId.region()==1 && aId.station()==4) ||
+	///RPC RE1/2 temporarily not used (aId.region()==1 && aId.station()==1 && aId.ring()<2) ||
+       (aId.region()==1 && aId.station()>0 && aId.ring()<3))
        ) return false;
 
     if(type==l1t::tftype::omtf_neg &&
@@ -70,7 +73,9 @@ bool  OMTFinputMaker::acceptDigi(uint32_t rawId,
 	(aId.region()==0 && aId.station()==4) ||
 	(aId.region()==0 && aId.station()==2 && aId.layer()==2 && aId.roll()==1) ||
 	(aId.region()==0 && aId.station()==3 && aId.roll()==1) ||
-	(aId.region()==-1 && aId.ring()<3))
+	(aId.region()==-1 && aId.station()==4) ||
+	 //RPC RE1/2 temporarily not used (aId.region()==1 && aId.station()==1 && aId.ring()<2) ||
+	(aId.region()==-1 && aId.station()>0 && aId.ring()<3))
        ) return false;
     
     if(type==l1t::tftype::bmtf && aId.region()!=0) return false;

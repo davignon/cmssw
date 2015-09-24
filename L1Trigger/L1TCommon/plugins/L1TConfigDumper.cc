@@ -20,17 +20,21 @@
 #include "CondFormats/DataRecord/interface/L1TriggerKeyRcd.h"
 #include "CondFormats/L1TObjects/interface/L1TriggerKey.h"
 
-//#include "CondFormats/DataRecord/interface/L1JetEtScaleRcd.h"
+#include "CondFormats/DataRecord/interface/L1JetEtScaleRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1JetEtScale.h"
+#include "CondFormats/L1TObjects/interface/L1CaloEtScale.h"
 
-//#include "CondFormats/DataRecord/interface/L1EmEtScaleRcd.h"
+#include "CondFormats/DataRecord/interface/L1EmEtScaleRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1EmEtScale.h"
+#include "CondFormats/L1TObjects/interface/L1CaloEtScale.h"
 
-//#include "CondFormats/DataRecord/interface/L1HtMissScaleRcd.h"
+#include "CondFormats/DataRecord/interface/L1HtMissScaleRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1HtMissScale.h"
+#include "CondFormats/L1TObjects/interface/L1CaloEtScale.h"
 
-//#include "CondFormats/DataRecord/interface/L1HfRingEtScaleRcd.h"
+#include "CondFormats/DataRecord/interface/L1HfRingEtScaleRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1HfRingEtScale.h"
+#include "CondFormats/L1TObjects/interface/L1CaloEtScale.h"
 
 #include "CondFormats/DataRecord/interface/L1MuTriggerScalesRcd.h"
 #include "CondFormats/L1TObjects/interface/L1MuTriggerScales.h"
@@ -104,8 +108,9 @@
 #include "CondFormats/DataRecord/interface/L1GtStableParametersRcd.h"
 #include "CondFormats/L1TObjects/interface/L1GtStableParameters.h"
 
-//#include "CondFormats/DataRecord/interface/L1GtTriggerMaskVetoAlgoTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMaskVetoAlgoTrigRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1GtTriggerMaskVetoAlgoTrig.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMask.h"
 
 #include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
 #include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
@@ -113,7 +118,7 @@
 #include "CondFormats/DataRecord/interface/L1GtPsbSetupRcd.h"
 #include "CondFormats/L1TObjects/interface/L1GtPsbSetup.h"
 
-//#include "CondFormats/DataRecord/interface/L1CaloGeometryRcd.h"
+#include "CondFormats/DataRecord/interface/L1CaloGeometryRecord.h" //Record spelled out
 #include "CondFormats/L1TObjects/interface/L1CaloGeometry.h"
 
 #include "CondFormats/DataRecord/interface/L1MuDTTFMasksRcd.h"
@@ -131,20 +136,25 @@
 #include "CondFormats/DataRecord/interface/L1GctChannelMaskRcd.h"
 #include "CondFormats/L1TObjects/interface/L1GctChannelMask.h"
 
-//#include "CondFormats/DataRecord/interface/L1GtPrescaleFactorsAlgoTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtPrescaleFactorsAlgoTrigRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1GtPrescaleFactorsAlgoTrig.h"
+#include "CondFormats/L1TObjects/interface/L1GtPrescaleFactors.h"
 
-//#include "CondFormats/DataRecord/interface/L1GtPrescaleFactorsTechTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtPrescaleFactorsTechTrigRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1GtPrescaleFactorsTechTrig.h"
+#include "CondFormats/L1TObjects/interface/L1GtPrescaleFactors.h"
 
-//#include "CondFormats/DataRecord/interface/L1GtTriggerMaskAlgoTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMaskAlgoTrigRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1GtTriggerMaskAlgoTrig.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMask.h"
 
-//#include "CondFormats/DataRecord/interface/L1GtTriggerMaskTechTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMaskTechTrigRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1GtTriggerMaskTechTrig.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMask.h"
 
-//#include "CondFormats/DataRecord/interface/L1GtTriggerMaskVetoTechTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMaskVetoTechTrigRcd.h"
 //#include "CondFormats/L1TObjects/interface/L1GtTriggerMaskVetoTechTrig.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMask.h"
 
 //#include "CondFormats/DataRecord/interface/NumL1CondRcd.h"
 //#include "CondFormats/L1TObjects/interface/NumL1Cond.h"
@@ -191,16 +201,20 @@ L1TConfigDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iSetup.get< L1TriggerKeyRcd >().get( B) ;
    
    //edm::ESHandle< L1JetEtScale > C;
-   //iSetup.get< L1JetEtScaleRcd >().get( C) ;
+   edm::ESHandle< L1CaloEtScale > C;
+   iSetup.get< L1JetEtScaleRcd >().get( C) ;
    
    //edm::ESHandle< L1EmEtScale > D;
-   //iSetup.get< L1EmEtScaleRcd >().get( D) ;
-   
+   edm::ESHandle< L1CaloEtScale > D;
+   iSetup.get< L1EmEtScaleRcd >().get( D) ;
+  
    //edm::ESHandle< L1HtMissScale > E;
-   //iSetup.get< L1HtMissScaleRcd >().get( E) ;
+   edm::ESHandle< L1CaloEtScale > E;
+   iSetup.get< L1HtMissScaleRcd >().get( E) ;
    
    //edm::ESHandle< L1HfRingEtScale > F;
-   //iSetup.get< L1HfRingEtScaleRcd >().get( F) ;
+   edm::ESHandle< L1CaloEtScale > F;
+   iSetup.get< L1HfRingEtScaleRcd >().get( F) ;
    
    edm::ESHandle< L1MuTriggerScales > G;
    iSetup.get< L1MuTriggerScalesRcd >().get( G) ;
@@ -275,7 +289,8 @@ L1TConfigDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iSetup.get< L1GtStableParametersRcd >().get( DD) ;
    
    //edm::ESHandle< L1GtTriggerMaskVetoAlgoTrig > EE;
-   //iSetup.get< L1GtTriggerMaskVetoAlgoTrigRcd >().get( EE) ;
+   edm::ESHandle< L1GtTriggerMask > EE;
+   iSetup.get< L1GtTriggerMaskVetoAlgoTrigRcd >().get( EE) ;
    
    edm::ESHandle< L1GtTriggerMenu > FF;
    iSetup.get< L1GtTriggerMenuRcd >().get( FF) ;
@@ -283,8 +298,8 @@ L1TConfigDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::ESHandle< L1GtPsbSetup > GG;
    iSetup.get< L1GtPsbSetupRcd >().get( GG) ;
    
-   //edm::ESHandle< L1CaloGeometry > HH;
-   //iSetup.get< L1CaloGeometryRcd >().get( HH) ;
+   edm::ESHandle< L1CaloGeometry > HH;
+   iSetup.get< L1CaloGeometryRecord >().get( HH) ; // Record spelled out
    
    edm::ESHandle< L1MuDTTFMasks > II;
    iSetup.get< L1MuDTTFMasksRcd >().get( II) ;
@@ -302,25 +317,42 @@ L1TConfigDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iSetup.get< L1GctChannelMaskRcd >().get( MM) ;
    
    //edm::ESHandle< L1GtPrescaleFactorsAlgoTrig > NN;
-   //iSetup.get< L1GtPrescaleFactorsAlgoTrigRcd >().get( NN) ;
+   edm::ESHandle< L1GtPrescaleFactors > NN;
+   iSetup.get< L1GtPrescaleFactorsAlgoTrigRcd >().get( NN) ;
    
    //edm::ESHandle< L1GtPrescaleFactorsTechTrig > OO;
-   //iSetup.get< L1GtPrescaleFactorsTechTrigRcd >().get( OO) ;
+   edm::ESHandle< L1GtPrescaleFactors > OO;
+   iSetup.get< L1GtPrescaleFactorsTechTrigRcd >().get( OO) ;
    
    //edm::ESHandle< L1GtTriggerMaskAlgoTrig > PP;
-   //iSetup.get< L1GtTriggerMaskAlgoTrigRcd >().get( PP) ;
+   edm::ESHandle< L1GtTriggerMask > PP;
+   iSetup.get< L1GtTriggerMaskAlgoTrigRcd >().get( PP) ;
    
    //edm::ESHandle< L1GtTriggerMaskTechTrig > QQ;
-   //iSetup.get< L1GtTriggerMaskTechTrigRcd >().get( QQ) ;
+   edm::ESHandle< L1GtTriggerMask > QQ;
+   iSetup.get< L1GtTriggerMaskTechTrigRcd >().get( QQ) ;
    
    //edm::ESHandle< L1GtTriggerMaskVetoTechTrig > RR;
-   //iSetup.get< L1GtTriggerMaskVetoTechTrigRcd >().get( RR) ;
+   edm::ESHandle< L1GtTriggerMask > RR;
+   iSetup.get< L1GtTriggerMaskVetoTechTrigRcd >().get( RR) ;
    
    //edm::ESHandle< NumL1Cond > SS;
    //iSetup.get< NumL1CondRcd >().get( SS) ;
    
    // config driven printout of payloads:
    //rctParam->print(std::cout);
+
+   //AA->print(std::cout); // no member named 'print'
+   CC->print(std::cout); 
+   GG->print(std::cout); 
+   int numberConditionChips = 1;
+   FF->print(std::cout, numberConditionChips);
+   J->print(std::cout); 
+   II->print(); 
+   //W->print(std::cout); // no member named 'print'
+   KK->print(std::cout); 
+   X->print(std::cout); 
+   //U->print(std::cout); // no member named 'print'
 
 }
 

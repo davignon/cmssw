@@ -14,7 +14,7 @@
 //-----------------------
 // This Class's Header --
 //-----------------------
-#include "L1Trigger/L1Ntuples/interface/L1NtupleProducer.h"
+#include "L1NtupleProducer.h"
 
 //---------------
 // C++ Headers --

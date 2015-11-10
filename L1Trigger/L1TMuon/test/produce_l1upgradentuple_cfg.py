@@ -120,11 +120,11 @@ if SAMPLE == "zmumu" or SAMPLE == "minbias":
 process.L1MuonFilter = cms.EDFilter("SelectL1Muons",)
 process.GenMuonFilter = cms.EDFilter("SelectGenMuons",)
 
-process.load("L1TriggerDPG.L1Ntuples.l1NtupleProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1RecoTreeProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1ExtraTreeProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1MuonRecoTreeProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1MuonUpgradeTreeProducer_cfi")
+process.load("L1Trigger.L1Ntuples.l1NtupleProducer_cfi")
+process.load("L1Trigger.L1Ntuples.l1RecoTreeProducer_cfi")
+process.load("L1Trigger.L1Ntuples.l1ExtraTreeProducer_cfi")
+process.load("L1Trigger.L1Ntuples.l1MuonRecoTreeProducer_cfi")
+process.load("L1Trigger.L1Ntuples.l1MuonUpgradeTreeProducer_cfi")
 
 process.load("L1Trigger.L1TMuon.microgmtemulator_cfi")
 

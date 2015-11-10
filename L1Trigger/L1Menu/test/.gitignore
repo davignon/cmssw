@@ -1,0 +1,2 @@
+#Ignore subdirectories of the crab folder (where runs are actually store)
+crab/*/**	

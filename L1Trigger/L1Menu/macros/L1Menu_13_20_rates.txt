@@ -1,0 +1,8 @@
+
+L1 menu used = Menu_20PU_25bx.txt
+
+Target Luminosity = 70
+
+
+Using: whichFileAndLumiToUse = 3
+  L1NtupleFileName                 = root:///uscms/home/cbrainer/NewData.root

@@ -85,6 +85,7 @@ namespace l1t {
 		  //res[22] = empty link no data
 		  res[26] = ext_unp;
 		  res[28] = ext_unp;
+		  res[30] = ext_unp;
 		  
                   //From the tx buffers (old format)
 /*                  res[1]  = alg_unp;

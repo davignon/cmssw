@@ -1,9 +1,11 @@
+#include "TMath.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "EventFilter/L1TRawToDigi/interface/Unpacker.h"
 
+#include "L1Trigger/L1TMuon/interface/MuonRawDigiTranslator.h"
 #include "L1TObjectCollections.h"
-//#include "GTCollections.h"
+//#include "GMTCollections.h"
 
 namespace l1t {
    namespace stage2 {
@@ -15,77 +17,56 @@ namespace l1t {
 }
 
 // Implementation
-
 namespace l1t {
-namespace stage2 {
-   bool
-   MuonUnpacker::unpack(const Block& block, UnpackerCollections *coll)
-   {
+   namespace stage2 {
+      bool
+      MuonUnpacker::unpack(const Block& block, UnpackerCollections *coll)
+      {
+         LogDebug("L1T|Muon") << "Block ID  = " << block.header().getID() << " size = " << block.header().getSize();
 
-     LogDebug("L1T") << "Block ID  = " << block.header().getID() << " size = " << block.header().getSize();
+         auto payload = block.payload();
 
-     int nBX = int(ceil(block.header().getSize() / 12.)); // Since there are 12 EGamma objects reported per event (see CMS IN-2013/005)
+         unsigned int nWords = 6; // every link transmits 6 words (3 muons) per bx
+         int nBX, firstBX, lastBX;
+         nBX = int(ceil(block.header().getSize() / nWords));
+         getBXRange(nBX, firstBX, lastBX);
+         // only use central BX for now
+         //firstBX = 0;
+         //lastBX = 0;
+         //LogDebug("L1T|Muon") << "BX override. Set first BX = lastBX = 0.";
 
-     // Find the central, first and last BXs
-     int firstBX = -(ceil((double)nBX/2.)-1);
-     int lastBX;
-     if (nBX % 2 == 0) {
-       lastBX = ceil((double)nBX/2.);
-     } else {
-       lastBX = ceil((double)nBX/2.)-1;
-     }
+         auto res = static_cast<L1TObjectCollections*>(coll)->getMuons();
+         res->setBXRange(firstBX, lastBX);
 
-     auto res_ = static_cast<L1TObjectCollections*>(coll)->getMuons();
-     res_->setBXRange(firstBX, lastBX);
+         LogDebug("L1T|Muon") << "nBX = " << nBX << " first BX = " << firstBX << " lastBX = " << lastBX;
 
-     LogDebug("L1T") << "nBX = " << nBX << " first BX = " << firstBX << " lastBX = " << lastBX;
+         // Initialise index
+         int unsigned i = 0;
 
-     // Initialise index
-     int unsigned i = 0;
+         // Loop over multiple BX and then number of muons filling muon collection
+         for (int bx = firstBX; bx <= lastBX; ++bx) {
+            for (unsigned nWord = 0; nWord < nWords && i < block.header().getSize(); nWord += 2) {
+               uint32_t raw_data_00_31 = payload[i++];
+               uint32_t raw_data_32_63 = payload[i++];        
+               LogDebug("L1T|Muon") << "raw_data_00_31 = 0x" << hex << raw_data_00_31 << " raw_data_32_63 = 0x" << raw_data_32_63;
+               // skip empty muons (hwPt == 0)
+               if (((raw_data_00_31 >> l1t::MuonRawDigiTranslator::ptShift_) & l1t::MuonRawDigiTranslator::ptMask_) == 0) {
+                  LogDebug("L1T|Muon") << "Muon hwPt zero. Skip.";
+                  continue;
+               }
 
-     // Loop over multiple BX and then number of EG cands filling collection
-     for (int bx=firstBX; bx<=lastBX; bx++){
-       
-       for (unsigned nMu=0; nMu < block.header().getSize(); nMu=nMu+2){ //need to check the 12*2...this is not really num muons it is max words in block.
+               Muon mu;
+                   
+               MuonRawDigiTranslator::fillMuon(mu, raw_data_00_31, raw_data_32_63);
 
-         //muons are spread over 64 bits grab the two 32 bit pieces
-         uint32_t raw_data_00_31 = block.payload()[i++];
-	 uint32_t raw_data_32_63 = block.payload()[i++];
+               LogDebug("L1T|Muon") << "Mu" << nWord/2 << ": eta " << mu.hwEta() << " phi " << mu.hwPhi() << " pT " << mu.hwPt() << " iso " << mu.hwIso() << " qual " << mu.hwQual() << " charge " << mu.hwCharge() << " charge valid " << mu.hwChargeValid();
 
-         std::cout << "nMu = " << nMu << "Word 1 " << hex << raw_data_00_31 << " Word 2 " << raw_data_32_63 << dec << std::endl; 
-	 
-         // skip padding 
-         if (raw_data_00_31 == 0)
-            continue;
-
-         l1t::Muon mu = l1t::Muon();
-
-             
-         mu.setHwPt( (raw_data_00_31 >> 10) & 0x1FF);
-         mu.setHwQual( (raw_data_00_31 >> 19) & 0xF); 
-
-	 int abs_eta = (raw_data_00_31 >> 23) & 0xFF;
-         if ((raw_data_00_31 >> 31) & 0x1) {
-           mu.setHwEta(-1*abs_eta);
-         } else {
-           mu.setHwEta(abs_eta);
+               res->push_back(bx, mu);
+            }
          }
-
-         mu.setHwPhi((raw_data_00_31 >> 0) & 0x1FF);
-	 mu.setHwIso((raw_data_32_63 >> 0) & 0x3); 
-         mu.setHwCharge( (raw_data_32_63 >> 2) & 0x1);
-	 mu.setHwChargeValid( (raw_data_32_63 >> 3) & 0x1);
-       
-         LogDebug("L1T") << "Mu: eta " << mu.hwEta() << " phi " << mu.hwPhi() << " pT " << mu.hwPt() << " iso " << mu.hwIso() << " qual " << mu.hwQual();
-
-         res_->push_back(bx,mu);
-       }
-
-     }
-
-     return true;
+         return true;
+      }
    }
-}
 }
 
 DEFINE_L1T_UNPACKER(l1t::stage2::MuonUnpacker);

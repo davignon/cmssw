@@ -1,5 +1,5 @@
 ///
-/// \class l1t::Stage1Layer2EtSumAlgorithmImpHW
+/// \class l1t::Stage1Layer2EtSumAlgorithmImpHI
 ///
 /// \author: Nick Smith (nick.smith@cern.ch)
 ///
@@ -16,7 +16,7 @@
 #include "L1Trigger/L1TCalorimeter/interface/HardwareSortingMethods.h"
 #include <cassert>
 
-l1t::Stage1Layer2EtSumAlgorithmImpHW::Stage1Layer2EtSumAlgorithmImpHW(CaloParamsHelper* params) : params_(params)
+l1t::Stage1Layer2EtSumAlgorithmImpHI::Stage1Layer2EtSumAlgorithmImpHI(CaloParamsHelper* params) : params_(params)
 {
   //now do what ever initialization is needed
   for(size_t i=0; i<cordicPhiValues.size(); ++i) {
@@ -29,12 +29,12 @@ l1t::Stage1Layer2EtSumAlgorithmImpHW::Stage1Layer2EtSumAlgorithmImpHW(CaloParams
 }
 
 
-l1t::Stage1Layer2EtSumAlgorithmImpHW::~Stage1Layer2EtSumAlgorithmImpHW() {
+l1t::Stage1Layer2EtSumAlgorithmImpHI::~Stage1Layer2EtSumAlgorithmImpHI() {
 
 
 }
 
-void l1t::Stage1Layer2EtSumAlgorithmImpHW::processEvent(const std::vector<l1t::CaloRegion> & regions,
+void l1t::Stage1Layer2EtSumAlgorithmImpHI::processEvent(const std::vector<l1t::CaloRegion> & regions,
 							const std::vector<l1t::CaloEmCand> & EMCands,
 							const std::vector<l1t::Jet> * jets,
 							      std::vector<l1t::EtSum> * etsums) {
@@ -56,7 +56,7 @@ void l1t::Stage1Layer2EtSumAlgorithmImpHW::processEvent(const std::vector<l1t::C
   //double etSumEtThresholdHt = params_->etSumEtThreshold(1);
   int etSumEtThresholdHt = (int) (params_->etSumEtThreshold(1) / jetLsb);
 
-  RegionCorrection(regions, subRegions, params_);
+  //RegionCorrection(regions, subRegions, params_);
 
   std::vector<SimpleRegion> regionEtVect;
   std::vector<SimpleRegion> regionHtVect;
@@ -85,7 +85,8 @@ void l1t::Stage1Layer2EtSumAlgorithmImpHW::processEvent(const std::vector<l1t::C
   // the region sum input to MET algorithm
   // In stage 2, we would move to hwEtEm() and hwEtHad() for separate MET/MHT
   // Thresholds will be hardware values not physical
-  for (auto& region : *subRegions) {
+  //for (auto& region : *subRegions) {
+  for (auto& region : regions) {
     if ( region.hwEta() >= etSumEtaMinEt && region.hwEta() <= etSumEtaMaxEt)
     {
       if(region.hwPt() >= etSumEtThresholdEt)
@@ -121,13 +122,13 @@ void l1t::Stage1Layer2EtSumAlgorithmImpHW::processEvent(const std::vector<l1t::C
   int MHTqual = 0;
   int ETTqual = 0;
   int HTTqual = 0;
-  if(MET > 0xfff || regionOverflowEt) // MET 12 bits
+  if(MET >= 0xfff || regionOverflowEt) // MET 12 bits
     METqual = 1;
-  if(MHT > 0x7f || regionOverflowHt)  // MHT 7 bits
+  if(MHT >= 0x7f || regionOverflowHt)  // MHT 7 bits
     MHTqual = 1;
-  if(sumET > 0xfff || regionOverflowEt)
+  if(sumET >= 0xfff || regionOverflowEt)
     ETTqual = 1;
-  if(sumHT > 0xfff || regionOverflowHt)
+  if(sumHT >= 0xfff || regionOverflowHt)
     HTTqual = 1;
 
   MHT &= 127; // limit MHT to 7 bits as the firmware does, but only after checking for overflow.
@@ -135,6 +136,7 @@ void l1t::Stage1Layer2EtSumAlgorithmImpHW::processEvent(const std::vector<l1t::C
   uint16_t MHToHT=MHToverHT(MHT,sumHT);
   //iPhiHt is replaced by the dPhi between two most energetic jets
   iPhiHT = DiJetPhi(jets);
+
 
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > etLorentz(0,0,0,0);
   l1t::EtSum etMiss(*&etLorentz,EtSum::EtSumType::kMissingEt,MET&0xfff,0,iPhiET,METqual);
@@ -156,7 +158,7 @@ void l1t::Stage1Layer2EtSumAlgorithmImpHW::processEvent(const std::vector<l1t::C
 }
 
 std::tuple<int, int, int>
-l1t::Stage1Layer2EtSumAlgorithmImpHW::doSumAndMET(const std::vector<SimpleRegion>& regionEt, ETSumType sumType)
+l1t::Stage1Layer2EtSumAlgorithmImpHI::doSumAndMET(const std::vector<SimpleRegion>& regionEt, ETSumType sumType)
 {
   std::array<int, 18> sumEtaPos{};
   std::array<int, 18> sumEtaNeg{};
@@ -240,7 +242,7 @@ l1t::Stage1Layer2EtSumAlgorithmImpHW::doSumAndMET(const std::vector<SimpleRegion
 // converts phase from 3Q16 to 0-71
 // Expects abs(phase) <= 205887 (pi*2^16)
 int
-l1t::Stage1Layer2EtSumAlgorithmImpHW::cordicToMETPhi(int phase)
+l1t::Stage1Layer2EtSumAlgorithmImpHI::cordicToMETPhi(int phase)
 {
   assert(abs(phase)<=205887);
   for(size_t i=0; i<cordicPhiValues.size()-1; ++i)
@@ -250,7 +252,8 @@ l1t::Stage1Layer2EtSumAlgorithmImpHW::cordicToMETPhi(int phase)
   return 0;
 }
 
-int l1t::Stage1Layer2EtSumAlgorithmImpHW::DiJetPhi(const std::vector<l1t::Jet> * jets)  const {
+int l1t::Stage1Layer2EtSumAlgorithmImpHI::DiJetPhi(const std::vector<l1t::Jet> * jets)  const {
+
 
   int dphi = 10; // initialize to negative physical dphi value
   if (jets->size()<2) return dphi; // size() not really reliable as we pad the size to 8 (4cen+4for) in the sorter
@@ -267,7 +270,7 @@ int l1t::Stage1Layer2EtSumAlgorithmImpHW::DiJetPhi(const std::vector<l1t::Jet> *
   return difference;
 }
 
-uint16_t l1t::Stage1Layer2EtSumAlgorithmImpHW::MHToverHT(uint16_t num,uint16_t den)  const {
+uint16_t l1t::Stage1Layer2EtSumAlgorithmImpHI::MHToverHT(uint16_t num,uint16_t den)  const {
 
   uint16_t result;
   uint32_t numerator(num),denominator(den);
@@ -280,5 +283,6 @@ uint16_t l1t::Stage1Layer2EtSumAlgorithmImpHW::MHToverHT(uint16_t num,uint16_t d
       result = numerator/denominator;
       result = result & 0x7f;
     }
+
   return result;
 }

@@ -159,9 +159,11 @@ bool HLTL1TSeed::hltFilter(edm::Event& iEvent, const edm::EventSetup& evSetup, t
   //seedsL1TriggerObjectMaps(iEvent, filterproduct, l1GtTmAlgo.product(), gtReadoutRecordPtr, physicsDaqPartition);
   
   //// FIXME: for now don't pass TrigMask nor gtReadout record.
-  seedsL1TriggerObjectMaps(iEvent, filterproduct);   
+  //seedsL1TriggerObjectMaps(iEvent, filterproduct);   
                                                      
-  //seedsAll(iEvent, filterproduct);
+  
+  // v1.0 of the module:
+  seedsAll(iEvent, filterproduct);
 
   if (m_isDebugEnabled) {
         dumpTriggerFilterObjectWithRefs(filterproduct);
@@ -322,6 +324,7 @@ bool HLTL1TSeed::seedsAll(edm::Event & iEvent, trigger::TriggerFilterObjectWithR
       l1extra::L1MuonParticleRef(
       l1Muon, iObj));
     */
+
 
     return objectsInFilter;
 }
@@ -1087,7 +1090,7 @@ bool HLTL1TSeed::seedsL1TriggerObjectMaps(edm::Event& iEvent,
     //return seedsResult;
 
     if (m_isDebugEnabled) {
-        dumpTriggerFilterObjectWithRefs(filterproduct);
+      dumpTriggerFilterObjectWithRefs(filterproduct);
     }
 
     return true;

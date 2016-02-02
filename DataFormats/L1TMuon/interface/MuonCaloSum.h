@@ -4,18 +4,15 @@
 #include "DataFormats/L1Trigger/interface/BXVector.h"
 
 namespace l1t {
-  class GMTInputCaloSum;
-  typedef BXVector<GMTInputCaloSum> GMTInputCaloSumBxCollection;
-
-  class GMTInputCaloSum {
+  class MuonCaloSum {
     public:
-      GMTInputCaloSum() :
+      MuonCaloSum() :
         m_etBits(0), m_hwPhi(0), m_hwEta(0), m_index(0) {};
 
-      GMTInputCaloSum(int pt, int phi, int eta, int index) :
+      MuonCaloSum(int pt, int phi, int eta, int index) :
         m_etBits(pt), m_hwPhi(phi), m_hwEta(eta), m_index(index) {};
 
-      virtual ~GMTInputCaloSum() {};
+      virtual ~MuonCaloSum() {};
 
       void setEtBits(int bits) { m_etBits = bits; };
       void setPhiBits(int bits) { m_hwPhi = bits; };

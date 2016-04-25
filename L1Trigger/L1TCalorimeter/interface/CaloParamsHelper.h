@@ -33,7 +33,8 @@ namespace l1t {
            layer1ECal=17,
            layer1HCal=18,
            layer1HF=19,
-	   NUM_CALOPARAMNODES=20
+	   tauIsolation2=20,
+	   NUM_CALOPARAMNODES=21
     };
 
     CaloParamsHelper() { pnode_.resize(NUM_CALOPARAMNODES); }
@@ -189,6 +190,7 @@ namespace l1t {
     double tauPUSParam(int ipar) const { return pnode_[tauPUS].dparams_.at(ipar); }
 
     l1t::LUT* tauIsolationLUT() { return &pnode_[tauIsolation].LUT_; }
+    l1t::LUT* tauIsolationLUT2() { return &pnode_[tauIsolation2].LUT_; }
 
     std::string tauCalibrationType() const { return pnode_[tauCalibration].type_; }
     std::vector<double> tauCalibrationParams() { return pnode_[tauCalibration].dparams_; }
@@ -216,6 +218,7 @@ namespace l1t {
     void setIsoTauEtaMax(int value) { taup_.isoEtaMax_ = value; }
     void setTauPUSType(std::string type) { pnode_[tauPUS].type_ = type; }
     void setTauIsolationLUT(const l1t::LUT & lut) { pnode_[tauIsolation].LUT_ = lut; }
+    void setTauIsolationLUT2(const l1t::LUT & lut) { pnode_[tauIsolation2].LUT_ = lut; }
 
     void setTauCalibrationType(std::string type) { pnode_[tauCalibration].type_ = type; }
     void setTauIsoAreaNrTowersEta(unsigned iTauIsoAreaNrTowersEta){taup_.isoAreaNrTowersEta_=iTauIsoAreaNrTowersEta;}

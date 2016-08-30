@@ -811,7 +811,8 @@ unsigned int l1t::Stage2Layer2TauAlgorithmFirmwareImp1::calibLutIndex (int ieta,
     //cout << "      * compressedEta = " << compressedEta << endl;
     //cout << "      * compressedEt = "  << compressedEt  << endl;
 
-    unsigned int address =  (compressedEt<<4)+(compressedEta<<2)+(hasEM<<1)+isMerged;
+    unsigned int address =  (compressedEta<<7)+(compressedEt<<2)+(hasEM<<1)+isMerged;//2 bits eta, 5 bits et, 1 bit hasEM, 1 bis isMerged
+    // unsigned int address =  (compressedEt<<4)+(compressedEta<<2)+(hasEM<<1)+isMerged;
     return address;
 }
 
@@ -875,7 +876,9 @@ unsigned int l1t::Stage2Layer2TauAlgorithmFirmwareImp1::isoLutIndex(int Et, int 
     //cout << " ****  -- compressed: eta, et, ntt: " << etaCmpr << " " <<  etCmpr << " " << nTTCmpr << endl;
 
     // get the address -- NOTE: this also depends on the compression scheme!
-    unsigned int address = ( (etCmpr << 7) | (nTTCmpr << 2) | etaCmpr );//ordering compressed: 5 bits iEt, 5 bits nTT, 2 bits iEta
+
+    unsigned int address = ( (etaCmpr << 10) | (etCmpr << 5) | nTTCmpr );//ordering compressed: 2 bits iEta, 5 bits iEt, 5 bits nTT
+    // unsigned int address = ( (etCmpr << 7) | (nTTCmpr << 2) | etaCmpr );//ordering compressed: 5 bits iEt, 5 bits nTT, 2 bits iEta
 
     //cout << " ****  -- address without compression block: " << address << endl;
     address += 0; // add offsets of compression block

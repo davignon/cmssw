@@ -837,7 +837,7 @@ int l1t::Stage2Layer2TauAlgorithmFirmwareImp1::calibratedPt(const l1t::CaloClust
     if (rawPt > 8191) rawPt = 8191; // 13 bits for uncalibrated E
     
     int corrXrawPt = corr*rawPt; // 17 bits
-    int calibPt = (corrXrawPt>>8); // (10 bits) = (7 bits) + (9 bits) 
+    int calibPt = (corrXrawPt>>9); // (10 bits) = (7 bits) + (9 bits) 
     // saturation FIXME: to be done in demux?
     if (calibPt > 4095) calibPt = 4095; // 12 bit in output
     

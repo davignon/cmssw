@@ -159,5 +159,5 @@ process.dqmSaver.workflow = '/RelVal/HLTriggerOffline/Tau'
 process.dqmSaver.saveByRun = cms.untracked.int32(-1)
 process.dqmSaver.saveAtJobEnd = cms.untracked.bool(True)
 
-process.ppost = cms.EndPath(process.l1tEfficiencyHarvesting + process.dqmSaver)
+process.ppost = cms.EndPath(process.l1tEfficiencyTaus_Harvesting + process.dqmSaver)
 

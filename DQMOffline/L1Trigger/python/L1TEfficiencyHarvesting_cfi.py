@@ -19,7 +19,7 @@ l1tEfficiencyMuons_Harvesting = cms.EDAnalyzer("L1TEfficiency_Harvesting",
                             )
         )
     )
-
+)
 
 l1tEfficiencyTaus_Harvesting = cms.EDAnalyzer("L1TEfficiency_Harvesting",
   verbose  = cms.untracked.bool(False),

@@ -40,7 +40,7 @@ TauL1tPair::TauL1tPair(const TauL1tPair& tauL1tPair) {
 double TauL1tPair::dR() {
   
   float dEta = m_regTau ? (m_regTau->eta() - eta()) : 999.;					
-  float dPhi = m_regTau ? (m_regTau->phi() - phi()) : 999.; 
+  float dPhi = m_regTau ? TMath::ACos(TMath::Cos(m_regTau->phi() - phi())) : 999.; 		
   float dr = sqrt(dEta*dEta + dPhi*dPhi);
   return dr;
 }
@@ -424,7 +424,7 @@ void L1TEfficiencyTaus_Offline::getTightMuons(edm::Handle<reco::MuonCollection> 
   int nb_mu=0;
 
   for(; muonIt2!=muonEnd2; ++muonIt2) {
-    if (fabs(muonIt2->eta())< 2.4 && muonIt2->pt()>10 && muon::isLooseMuon((*muonIt))) {
+    if (fabs(muonIt2->eta())< 2.4 && muonIt2->pt()>10 && muon::isLooseMuon((*muonIt2)) && (muonIt2->pfIsolationR04().sumChargedHadronPt+max(muonIt2->pfIsolationR04().sumNeutralHadronEt+muonIt2->pfIsolationR04().sumPhotonEt-0.5*muonIt2->pfIsolationR04().sumPUPt,0.0))/muonIt2->pt()<0.3) {
       ++nb_mu;
     }
   }
@@ -433,7 +433,7 @@ void L1TEfficiencyTaus_Offline::getTightMuons(edm::Handle<reco::MuonCollection> 
     if (!matchHlt(trigEvent,&(*muonIt))) continue;
     float muiso=(muonIt->pfIsolationR04().sumChargedHadronPt+max(muonIt->pfIsolationR04().sumNeutralHadronEt+muonIt->pfIsolationR04().sumPhotonEt-0.5*muonIt->pfIsolationR04().sumPUPt,0.0))/muonIt->pt();
 
-    if (muiso<0.1 && nb_mu<2 && !foundTightMu && fabs(muonIt->eta())< 2.4 && muonIt->pt()>25 && muon::isMediumMuon((*muonIt))) {
+    if (muiso<0.1 && nb_mu<2 && !foundTightMu && fabs(muonIt->eta())< 2.1 && muonIt->pt()>24 && muon::isLooseMuon((*muonIt))) {
       float mt=sqrt(pow(muonIt->pt() + pfmet->pt(), 2) - pow(muonIt->px() + pfmet->px(),2) - pow(muonIt->py() + pfmet->py(), 2));
       if (mt<30){
          m_TightMuons.push_back(&(*muonIt));
